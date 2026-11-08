@@ -1,47 +1,47 @@
 # BREX TOP UP
 
-Plateforme de vente de produits Free Fire en HTG, construite avec React, TypeScript, Tailwind CSS et Supabase. Le dépôt fournit le storefront, les flux de compte/commande, une migration SQL sécurisée et une architecture d’intégration fournisseur sans API fictive.
+Boutique Free Fire en HTG, basée sur React, TypeScript, Tailwind CSS et Supabase. Dépôt : https://github.com/alcimekervensky/brex-top-up
 
-> **État de lancement :** configurez Supabase, les coordonnées de paiement et un fournisseur autorisé avant d’accepter de vrais paiements. Les commandes et paiements ne sont pas simulés comme livrés; l’automatisation fournisseur est volontairement désactivée tant que les identifiants réels ne sont pas ajoutés.
+## État MVP
 
-## Démarrage local
+Le site propose un catalogue, une création de commande Supabase (utilisateur connecté), un espace de suivi client, des pages de paiement, et un portail admin séparé (`/admin`) pour recevoir et traiter les commandes. **L’API fournisseur n’est pas encore connectée** : il faut fournir la documentation officielle d’un fournisseur autorisé. Aucune commande ne doit être marquée livrée sans confirmation réelle.
 
-1. Installez Node.js 20+.
-2. Clonez le dépôt et exécutez `npm install`.
-3. Créez un projet Supabase et appliquez `supabase/migrations/202611080001_initial_schema.sql` via la CLI ou l’éditeur SQL.
-4. Copiez `.env.example` vers `.env.local` et renseignez l’URL Supabase et la clé anon publique.
-5. Lancez `npm run dev`, puis `npm run build` pour vérifier la compilation.
+Coordonnées de paiement fournies par le propriétaire du site : bénéficiaire **Alcime Sheidlyne**, NatCash **43737529**, MonCash **31888253**. Vérifiez le nom et les numéros avant d’accepter des paiements en production.
 
-## Configuration Supabase
+## Installation locale
 
-- Activez Email/Password et, si souhaité, Google dans Authentication > Providers et ajoutez les URL de redirection locale et Vercel.
-- Activez l’envoi de confirmation d’email et configurez le SMTP de production.
-- Le SQL crée tables, politiques RLS, produits de base et fonctions transactionnelles. Le rôle `admin`/`reseller` ne peut pas être choisi par l’utilisateur; attribuez-le via une opération SQL privilégiée ou un outil serveur de confiance, jamais depuis le navigateur.
-- Créez un bucket privé `payment-proofs`; utilisez les policies de la migration, et définissez une limite de taille/MIME dans Supabase Storage.
-- Pour accorder l’administration initiale, identifiez le UUID dans `auth.users`, puis exécutez dans l’éditeur SQL comme propriétaire de projet : `update public.profiles set role = 'admin' where id = '<UUID>';` Protégez cet accès et ne l’exposez jamais au client.
+1. Utilisez Node.js 20+ puis `npm install`.
+2. Créez un projet Supabase et exécutez les migrations dans `supabase/migrations/` dans l’ordre.
+3. Copiez `.env.example` vers `.env.local`, configurez `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY`.
+4. Configurez Supabase Auth (Email, et Google si souhaité) avec les URL de redirection locale et production.
+5. Lancez `npm run dev`. Vérifiez avec `npm run build`.
 
-## Paiements et portefeuille
+## Configurer le compte administrateur
 
-Les paiements NatCash/MonCash sont des transferts manuels : l’utilisateur envoie la référence et une preuve privée, puis un administrateur vérifie le reçu. Le portefeuille ne peut être crédité que par la fonction de validation côté serveur et les fonctions SQL avec verrouillage/idempotence. Ne faites jamais confiance à un montant fourni par le navigateur. Les numéros bénéficiaires de démonstration sont volontairement omis; publiez uniquement des coordonnées vérifiées.
+Créez un utilisateur via l’inscription normale, récupérez son UUID dans Supabase Auth, puis attribuez le rôle admin depuis l’éditeur SQL sécurisé :
 
-## Fournisseur de livraison
+```sql
+update public.profiles set role = 'admin' where id = '<UUID_DU_COMPTE>';
+```
 
-Aucune API Free Fire n’est inventée ni intégrée. Branchez uniquement un fournisseur officiel/autorisé dans une Edge Function Supabase (ou serveur privé), stockez URL/clé/secret dans les secrets de fonction, journalisez les identifiants et réponses expurgées, ajoutez timeouts, retries avec backoff et idempotency key. N’envoyez jamais de clé fournisseur dans `VITE_*` et ne passez une commande à `Completed` qu’après vérification de livraison fournisseur. Gardez les actions d’administration et remboursements audités.
+Ne laissez jamais les utilisateurs choisir leur propre rôle. Connectez-vous puis ouvrez `/admin`; les sous-pages `/admin/orders` et `/admin/supplier` sont dans le portail privé. RLS et les fonctions SQL contrôlent aussi les permissions côté serveur.
 
-## Déploiement Vercel
+## Commandes et paiements
 
-1. Importez ce dépôt dans Vercel, framework Vite, build `npm run build`, output `dist`.
-2. Ajoutez `VITE_SUPABASE_URL` et `VITE_SUPABASE_ANON_KEY` aux environnements Preview/Production.
-3. Ajoutez l’URL de production aux URL autorisées Supabase Auth et aux callbacks OAuth Google.
-4. Redéployez après toute modification des variables.
-5. Vérifiez RLS, bucket privé, SMTP, coordonnées et politiques juridiques avant de mettre en ligne.
+Le checkout utilise la fonction Supabase `create_order`; elle prend le prix depuis la base et exige une session. NatCash/MonCash créent une commande en attente. L’admin peut examiner la commande et mettre à jour son état de paiement/traitement. Le wallet n’est débité/crédité que par les opérations contrôlées côté base. Les demandes de dépôt exigent une vérification manuelle.
+
+Les preuves de dépôt exigent un bucket privé `payment-proofs` et ses policies de stockage. Configurez-les dans Supabase avant d’activer l’envoi de captures. Une commande doit être rapprochée par sa référence lors du paiement; le MVP n’intègre pas encore de callback de paiement automatique.
+
+## Fournisseur de Diamonds
+
+Aucun fournisseur n’est connecté. Demandez au fournisseur autorisé sa documentation API officielle et son environnement de test. L’intégration doit vivre dans une Supabase Edge Function; mettez les clés dans Function Secrets, jamais dans React, `.env` public ou une variable `VITE_*`. Voir `docs/provider-integration.md`. Le statut `Completed` est bloqué tant que le fournisseur n’a pas confirmé la livraison.
+
+## Déployer sur Vercel
+
+Importez ce dépôt depuis GitHub dans Vercel; build `npm run build`, sortie `dist`. Ajoutez les variables publiques Supabase dans les réglages Vercel, configurez l’URL de production dans Supabase Auth, puis redéployez. Vérifiez RLS, stockage privé, coordonnées de paiement, fournisseur autorisé et textes juridiques avant le lancement commercial.
 
 ## Scripts
 
-- `npm run dev` — serveur de développement
-- `npm run build` — vérification TypeScript et build Vite
-- `npm run preview` — prévisualisation de production
-
-## Limites à configurer avant commercialisation
-
-Google OAuth nécessite ses identifiants; WhatsApp utilise encore un numéro placeholder dans l’interface. Les tutoriels, e-mails support et coordonnées de paiement doivent être ajoutés. Les règles légales sont des modèles, pas un avis juridique. Le traitement automatique fournisseur, la gestion complète des revendeurs et les notifications nécessitent leurs fonctions serveur/intégrations réelles.
+- `npm run dev` — développement
+- `npm run build` — vérification TypeScript et build
+- `npm run preview` — prévisualisation production
