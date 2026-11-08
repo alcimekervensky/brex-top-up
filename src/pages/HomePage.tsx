@@ -1,4 +1,4 @@
-import { ArrowRight, CheckCircle2, CreditCard, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, CheckCircle2, CreditCard, MessageCircle, ShieldCheck, Sparkles, TrendingUp, Zap } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import ProductCard from '../components/ProductCard';
 import { featuredPromos, paymentInfo, productCatalog } from '../data/mockData';
