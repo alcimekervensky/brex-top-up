@@ -1,0 +1,2 @@
+import InfoPage from '../components/InfoPage';
+export default function PrivacyPage(){return <InfoPage title="Politique de confidentialité"><p>Les données nécessaires au compte, aux commandes et aux preuves de paiement sont utilisées pour fournir le service et prévenir la fraude.</p><p>Les preuves de paiement sont privées et leur accès doit rester limité au propriétaire et aux administrateurs autorisés. Configurez les durées de conservation et coordonnées du responsable avant mise en production.</p></InfoPage>}

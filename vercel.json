@@ -1,0 +1,4 @@
+# Configuration de Vercel pour SPA React Router
+rewrites:
+  - source: /(.*)
+    destination: /index.html

@@ -1,0 +1,2 @@
+import InfoPage from '../components/InfoPage';
+export default function RefundPage(){return <InfoPage title="Politique de remboursement"><p>Une commande numérique en cours ne peut pas toujours être annulée. Les demandes de remboursement sont examinées au cas par cas après vérification du paiement et du statut de livraison.</p><p>Aucun remboursement automatique ne doit être effectué sans validation et journalisation côté serveur. Complétez cette politique avec les règles commerciales applicables avant lancement.</p></InfoPage>}

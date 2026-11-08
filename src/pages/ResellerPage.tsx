@@ -1,0 +1,2 @@
+import InfoPage from '../components/InfoPage';
+export default function ResellerPage(){return <InfoPage title="Portail revendeur"><p>Le portail revendeur s’active uniquement pour les comptes ayant le rôle reseller attribué par un administrateur. Les tarifs et statistiques doivent être calculés côté serveur.</p><p>Connectez-vous avec un compte approuvé pour accéder à vos commandes. L’activation de l’espace revendeur nécessite la configuration Supabase et l’application des migrations incluses.</p></InfoPage>}

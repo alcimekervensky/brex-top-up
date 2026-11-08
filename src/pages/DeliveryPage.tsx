@@ -1,0 +1,2 @@
+import InfoPage from '../components/InfoPage';
+export default function DeliveryPage(){return <InfoPage title="Conditions de livraison"><p>Les délais dépendent de la région du compte et de la disponibilité du fournisseur. Les statuts Pending, Paid et Processing ne signifient pas que les Diamonds ont été livrés.</p><p>Le statut Completed doit être réservé à une confirmation explicite du fournisseur autorisé ou à une vérification manuelle documentée.</p></InfoPage>}
