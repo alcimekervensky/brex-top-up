@@ -9,7 +9,9 @@ import WalletPage from './pages/WalletPage';
 import ProfilePage from './pages/ProfilePage';
 import SupportPage from './pages/SupportPage';
 import AdminPage from './pages/AdminPage';
-import ResellerPage from './pages/ResellerPage';
+import ResellerLandingPage from './pages/ResellerLandingPage';
+import ResellerLoginPage from './pages/ResellerLoginPage';
+import ResellerDashboardPage from './pages/ResellerDashboardPage';
 import PaymentPage from './pages/PaymentPage';
 import TermsPage from './pages/TermsPage';
 import PrivacyPage from './pages/PrivacyPage';
@@ -31,7 +33,9 @@ export default function App() {
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/support" element={<SupportPage />} />
         <Route path="/admin" element={<AdminPage />} />
-        <Route path="/reseller" element={<ResellerPage />} />
+        <Route path="/reseller" element={<ResellerLandingPage />} />
+        <Route path="/reseller-login" element={<ResellerLoginPage />} />
+        <Route path="/reseller-dashboard" element={<ResellerDashboardPage />} />
         <Route path="/payments" element={<PaymentPage />} />
         <Route path="/terms" element={<TermsPage />} />
         <Route path="/privacy" element={<PrivacyPage />} />
